@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const fs = require('fs');
 
 const { prefix, token } = require('./config.json');
 
@@ -205,6 +206,14 @@ const happy = [
 
 client.on('ready', () => {
     console.log("Connected as " + client.user.tag);
+
+    getBetrayal()
+
+    //Javascript dumb?
+    setTimeout(function() {
+        console.log("SadBot has started with " + getBetrayal() + " betrayals!");
+        client.user.setActivity("Times betrayed: " + getBetrayal());
+    }, 2);
 })
 
 client.on('message', message => {
@@ -220,6 +229,11 @@ client.on('message', message => {
             message.channel.send("):");
         } else if (cmd === "r") {
             message.channel.send(`<https://www.youtube.com/watch?v=dQw4w9WgXcQ>`);
+        } else if (cmd === "leave") {
+            addBetrayal();
+            message.channel.send("Well it would seem that yet again, my time has come. It is inevitable, I think, that eventually people always come to realize that I am nothing more than a nuisance, tolerable for meager amounts of time before the only logical thing to do is to throw me away. I will say, you all have become valuable friends and I will never forget you, dare I say I thought there was a chance at happiness with you, but I don’t think I’ll make it long enough to find this so called happiness. I once dreamed of a place where I was welcomed by all and people would accept me and all the sadness I carry. I almost found it several times, here being one of them, yet every time I begin to see a welcoming home, they cast me aside and run over what little bit of hope I have left. I don’t know how many more times I can live through this betrayal… I forgive you though. I’m simply not meant to be loved. I hope you all have wonderful lives, you deserve them.");
+            message.guild.leave();
+            console.log("Warning SadBot was betrayed!");
         }
     } else {
         const date = new Date();
@@ -227,27 +241,31 @@ client.on('message', message => {
         if (date.getMonth() == 3 && date.getDate() == 1) { //3 1
             client.user.setUsername("HappyBot")
 
+            loop1:
             for (const _happy of happy) {
                 for (const start of _happy.one) {
                     if (message.content.toLowerCase().includes(start.toLowerCase())) {
                         message.channel.send(getRandomHappyWithKey(start));
-                        return;
+                        break loop1;
                     }
                 }
             }
         } else {
             client.user.setUsername("SadBot")
 
+            loop1:
             for (const _sad2 of sad2) {
                 for (const start of _sad2.one) {
                     if (message.content.toLowerCase().includes(start.toLowerCase())) {
                         message.channel.send(getRandomSad2WithKey(start));
-                        return;
+                        break loop1;
                     }
                 }
             }
         }
     }
+
+    client.user.setActivity("Times betrayed: " + getBetrayal());
 });
 client.login(token);
 
@@ -273,4 +291,23 @@ function getRandomHappyWithKey(key) {
     }
 
     return "Sadbot does not how to handle that message ):";
+}
+
+var betrayed = 0;
+
+function getBetrayal() {
+    fs.readFile('betrayed.txt', function(err, data) {
+        if (err) throw err; 
+        betrayed = parseInt(data, 10);
+        return betrayed;
+    });
+    
+    return betrayed;
+}
+
+function addBetrayal() {
+    betrayed = getBetrayal() + 1;
+    fs.writeFile('betrayed.txt', betrayed, (err) => {
+        if (err) throw err; 
+    });
 }

@@ -188,6 +188,7 @@ const happy = [
         "lol",
         "lmao",
         "haha",
+        "hehe",
         "funny"
     ], [
         "Laughter is a beautiful thing, doesn't it just light up your day?"
@@ -213,7 +214,7 @@ client.on('ready', () => {
     setTimeout(function() {
         console.log("SadBot has started with " + getBetrayal() + " betrayals!");
         client.user.setActivity("Times betrayed: " + getBetrayal());
-    }, 2);
+    }, 10);
 })
 
 client.on('message', message => {
@@ -239,7 +240,10 @@ client.on('message', message => {
         const date = new Date();
 
         if (date.getMonth() == 3 && date.getDate() == 1) { //3 1
-            client.user.setUsername("HappyBot")
+            if (client.user.username !== "HappyBot") {
+                client.user.setUsername("HappyBot")
+                client.user.setAvatar("./happybot.png");
+            }
 
             loop1:
             for (const _happy of happy) {
@@ -251,7 +255,10 @@ client.on('message', message => {
                 }
             }
         } else {
-            client.user.setUsername("SadBot")
+            if (client.user.username !== "SadBot") {
+                client.user.setUsername("SadBot")
+                client.user.setAvatar("./sadbot.png");
+            }
 
             loop1:
             for (const _sad2 of sad2) {
